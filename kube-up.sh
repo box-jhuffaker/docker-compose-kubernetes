@@ -18,7 +18,8 @@ if [ $? != 0 ]; then
 fi
 
 if [[ ! $(docker version --format {{.Server.Version}})  == "1.10.3" ]]; then 
-    echo "Warning: You should be running docker 1.10.3"
+    echo "Error: You should be running docker 1.10.3"
+    exit 1
 fi
 
 echo "Setting up kubectl context"
@@ -38,11 +39,17 @@ fi
 
 echo "Cleaning up last kubernetes run (may ask for sudo)"
 if command -v docker-machine >/dev/null 2>&1; then
-    docker-machine ssh $DOCKER_MACHINE_NAME "mount | grep -o 'on /var/lib/kubelet.* type' | cut -c 4- | rev | cut -c 6- | rev | xargs --no-run-if-empty sudo umount"
+    docker-machine ssh $DOCKER_MACHINE_NAME "mount | grep -o 'on /var/lib/kubelet.* type' | cut -c 4- | rev | cut -c 6- | rev | sort -r | xargs --no-run-if-empty sudo umount"
     docker-machine ssh $DOCKER_MACHINE_NAME "sudo rm -Rf /var/lib/kubelet"
+    docker-machine ssh $DOCKER_MACHINE_NAME "sudo mkdir -p /var/lib/kubelet"
+    docker-machine ssh $DOCKER_MACHINE_NAME "sudo mount --bind /var/lib/kubelet /var/lib/kubelet"
+    docker-machine ssh $DOCKER_MACHINE_NAME "sudo mount --make-shared /var/lib/kubelet"
 else
-    mount | grep -o 'on /var/lib/kubelet.* type' | cut -c 4- | rev | cut -c 6- | rev | xargs --no-run-if-empty sudo umount
+    mount | grep -o 'on /var/lib/kubelet.* type' | cut -c 4- | rev | cut -c 6- | rev | sort -r | xargs --no-run-if-empty sudo umount
     sudo rm -Rf /var/lib/kubelet
+    sudo mkdir -p /var/lib/kubelet
+    sudo mount --bind /var/lib/kubelet /var/lib/kubelet
+    sudo mount --make-shared /var/lib/kubelet
 fi
 
 if [[ -f "$HOME/.docker/config.json" ]]; then
@@ -67,7 +74,7 @@ docker run \
     --volume=/sys:/sys:ro \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
     --volume=/var/run:/var/run:rw \
-    --volume=/var/lib/kubelet:/var/lib/kubelet:rw \
+    --volume=/var/lib/kubelet:/var/lib/kubelet:shared \
     $private_repo_creds_mount \
     --net=host \
     --pid=host \
@@ -75,7 +82,6 @@ docker run \
     -d \
     gcr.io/google_containers/hyperkube-amd64:v1.2.0 \
     /hyperkube kubelet \
-        --containerized \
         --hostname-override="127.0.0.1" \
         --address="0.0.0.0" \
         --api-servers=http://localhost:8080 \
