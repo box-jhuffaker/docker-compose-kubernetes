@@ -11,5 +11,3 @@ if [ ! -z "$k8s_containers" ]; then
     docker rm -f -v $k8s_containers
 fi
 
-echo "Stopping etcd"
-docker rm -f etcd >/dev/null 2>&1
