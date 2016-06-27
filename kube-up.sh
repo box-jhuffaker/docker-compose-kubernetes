@@ -45,6 +45,13 @@ else
     sudo rm -Rf /var/lib/kubelet
 fi
 
+if [[ -f "$HOME/.docker/config.json" ]]; then
+    private_repo_creds_mount="--volume=\"$HOME/.docker:/root/.docker\""
+else
+    echo "Warning: Docker registry credentials not found, private registries disabled."
+    private_repo_creds_mount=""
+fi
+
 echo "Starting etcd"
 docker run \
     --name=etcd \
@@ -61,6 +68,7 @@ docker run \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
     --volume=/var/run:/var/run:rw \
     --volume=/var/lib/kubelet:/var/lib/kubelet:rw \
+    $private_repo_creds_mount \
     --net=host \
     --pid=host \
     --privileged=true \
