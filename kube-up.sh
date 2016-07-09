@@ -80,7 +80,7 @@ docker run \
     --pid=host \
     --privileged=true \
     -d \
-    gcr.io/google_containers/hyperkube-amd64:v1.2.0 \
+    gcr.io/google_containers/hyperkube-amd64:v1.2.5 \
     /hyperkube kubelet \
         --hostname-override="127.0.0.1" \
         --address="0.0.0.0" \
