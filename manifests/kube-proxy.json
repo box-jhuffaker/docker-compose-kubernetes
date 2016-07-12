@@ -7,7 +7,7 @@
     "containers": [
       {
         "name": "kube-proxy",
-        "image": "gcr.io/google_containers/hyperkube-amd64:v1.2.4",
+        "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.0",
         "command": [
                 "/hyperkube",
                 "proxy",

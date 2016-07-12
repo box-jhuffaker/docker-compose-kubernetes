@@ -77,7 +77,7 @@ docker run \
     --pid=host \
     --privileged=true \
     -d \
-    gcr.io/google_containers/hyperkube-amd64:v1.2.5 \
+    gcr.io/google_containers/hyperkube-amd64:v1.3.0 \
     /hyperkube kubelet \
         --hostname-override="127.0.0.1" \
         --address="0.0.0.0" \
@@ -92,9 +92,4 @@ until $(kubectl cluster-info &> /dev/null); do
     sleep 1
 done
 echo "Kubernetes cluster is up."
-
-"$this_dir/activate-kube-system.sh"
-"$this_dir/activate-dns.sh"
-# The dashboard doesn't seem ready yet
-# "$this_dir/activate-ui.sh"
 
