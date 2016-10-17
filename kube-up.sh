@@ -17,7 +17,7 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-if [[ ! $(docker version --format {{.Server.Version}})  == "1.10.3" ]]; then 
+if [[ ! $(docker version --format {{.Server.Version}})  == "1.10.3" ]]; then
     echo "Error: You should be running docker 1.10.3"
     exit 1
 fi
@@ -77,7 +77,7 @@ docker run \
     --pid=host \
     --privileged=true \
     -d \
-    gcr.io/google_containers/hyperkube-amd64:v1.3.0 \
+    gcr.io/google_containers/hyperkube-amd64:v1.3.7 \
     /hyperkube kubelet \
         --hostname-override="127.0.0.1" \
         --address="0.0.0.0" \
