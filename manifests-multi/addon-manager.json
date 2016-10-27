@@ -28,7 +28,7 @@
       },
       {
         "name": "kube-addon-manager-data",
-        "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.7",
+        "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.9",
         "command": [
           "/copy-addons.sh"
         ],

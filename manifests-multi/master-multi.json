@@ -10,7 +10,7 @@
   "containers":[
     {
       "name": "controller-manager",
-      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.7",
+      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.9",
       "command": [
               "/hyperkube",
               "controller-manager",
@@ -29,7 +29,7 @@
     },
     {
       "name": "apiserver",
-      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.7",
+      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.9",
       "command": [
               "/hyperkube",
               "apiserver",
@@ -43,7 +43,6 @@
               "--tls-cert-file=/srv/kubernetes/server.cert",
               "--tls-private-key-file=/srv/kubernetes/server.key",
               "--token-auth-file=/srv/kubernetes/known_tokens.csv",
-	      "--runtime-config=extensions/v1beta1=true",
               "--allow-privileged=true",
               "--v=2"
       ],
@@ -56,7 +55,7 @@
     },
     {
       "name": "scheduler",
-      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.7",
+      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.9",
       "command": [
               "/hyperkube",
               "scheduler",
@@ -66,7 +65,7 @@
     },
     {
       "name": "setup",
-      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.7",
+      "image": "gcr.io/google_containers/hyperkube-amd64:v1.3.9",
       "command": [
               "/setup-files.sh",
               "IP:10.0.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
