@@ -13,3 +13,4 @@ fi
 
 echo "Stopping etcd"
 docker rm -f etcd >/dev/null 2>&1
+
