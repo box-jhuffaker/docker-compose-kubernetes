@@ -64,14 +64,6 @@ else
 fi
 
 
-echo "Starting etcd"
-docker run \
-    --name=etcd \
-    --net=host \
-    -d \
-    gcr.io/google_containers/etcd:2.2.1 \
-    /usr/local/bin/etcd --listen-client-urls=http://127.0.0.1:4001 --advertise-client-urls=http://127.0.0.1:4001 >/dev/null 2>&1
-
 echo "Starting kubelet"
 docker run \
     --name=kubelet \
