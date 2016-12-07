@@ -17,7 +17,7 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-if [[ ! $(docker version --format {{.Server.Version}})  == "1.10.3" ]]; then 
+if [[ ! $(docker version --format {{.Server.Version}})  == "1.10.3" ]]; then
     echo "Error: You should be running docker 1.10.3"
     exit 1
 fi
@@ -44,16 +44,16 @@ if command -v docker-machine >/dev/null 2>&1; then
     docker-machine ssh $DOCKER_MACHINE_NAME "sudo mkdir -p /var/lib/kubelet"
     docker-machine ssh $DOCKER_MACHINE_NAME "sudo mount --bind /var/lib/kubelet /var/lib/kubelet"
     docker-machine ssh $DOCKER_MACHINE_NAME "sudo mount --make-shared /var/lib/kubelet"
-    docker-machine ssh $DOCKER_MACHINE_NAME "sudo mkdir -p /etc/kubernetes/manifests"
-    docker-machine scp -r "$this_dir/manifests/" "$DOCKER_MACHINE_NAME:/tmp" 2>&1 > /dev/null
-    docker-machine ssh $DOCKER_MACHINE_NAME "sudo cp -r /tmp/manifests/ /etc/kubernetes"
+    docker-machine ssh $DOCKER_MACHINE_NAME "sudo mkdir -p /etc/kubernetes/manifests-multi"
+    docker-machine scp -r "$this_dir/manifests-multi/" "$DOCKER_MACHINE_NAME:/tmp" 2>&1 > /dev/null
+    docker-machine ssh $DOCKER_MACHINE_NAME "sudo cp -fr /tmp/manifests-multi/ /etc/kubernetes"
 else
     mount | grep -o 'on /var/lib/kubelet.* type' | cut -c 4- | rev | cut -c 6- | rev | sort -r | xargs --no-run-if-empty sudo umount
     sudo rm -Rf /var/lib/kubelet
     sudo mkdir -p /var/lib/kubelet
     sudo mount --bind /var/lib/kubelet /var/lib/kubelet
     sudo mount --make-shared /var/lib/kubelet
-    cp -r "$this_dir/manifests/" "$DOCKER_MACHINE_NAME:/etc/kubernetes"
+    cp -r "$this_dir/manifests-multi/" "$DOCKER_MACHINE_NAME:/etc/kubernetes"
 fi
 
 if [[ -f "$HOME/.docker/config.json" ]]; then
@@ -63,6 +63,7 @@ else
     private_repo_creds_mount=""
 fi
 
+
 echo "Starting kubelet"
 docker run \
     --name=kubelet \
@@ -71,18 +72,18 @@ docker run \
     --volume=/var/lib/docker/:/var/lib/docker:rw \
     --volume=/var/run:/var/run:rw \
     --volume=/var/lib/kubelet:/var/lib/kubelet:shared \
-    --volume=/etc/kubernetes/manifests:/etc/kubernetes/manifests \
+    --volume=/etc/kubernetes/manifests-multi:/etc/kubernetes/manifests-multi \
     $private_repo_creds_mount \
     --net=host \
     --pid=host \
     --privileged=true \
     -d \
-    gcr.io/google_containers/hyperkube-amd64:v1.3.0 \
+    gcr.io/google_containers/hyperkube-amd64:v1.3.9 \
     /hyperkube kubelet \
         --hostname-override="127.0.0.1" \
         --address="0.0.0.0" \
         --api-servers=http://localhost:8080 \
-        --config=/etc/kubernetes/manifests \
+        --config=/etc/kubernetes/manifests-multi \
         --cluster-dns=10.0.0.10 \
         --cluster-domain=cluster.local \
         --allow-privileged=true --v=2 >/dev/null 2>&1
